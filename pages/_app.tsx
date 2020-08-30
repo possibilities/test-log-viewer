@@ -1,11 +1,29 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, ReactNode } from 'react'
 import Head from 'next/head'
+import { AppProps } from 'next/app'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider as MaterialUiThemeProvider } from '@material-ui/core/styles'
 import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components'
 import theme from '../modules/theme'
-import { AppProps } from 'next/app'
-import { Box } from 'mui-primitives'
+import Link from '../components/Link'
+import { Stack, Columns, Column, Box } from 'mui-primitives'
+
+const Layout = ({ children }: { children: ReactNode }) => (
+  <Box padding={2} paddingTop={0}>
+    <Stack space={2}>
+      <Columns space={1}>
+        <Column width='content'>
+          <Link href='/'>api</Link>
+        </Column>
+        <Column width='content'>|</Column>
+        <Column>
+          <Link href='/timings'>timings</Link>
+        </Column>
+      </Columns>
+      {children}
+    </Stack>
+  </Box>
+)
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props
@@ -31,7 +49,9 @@ const App = (props: AppProps) => {
         <StyledComponentsThemeProvider theme={theme}>
           <CssBaseline />
           <Box padding={2}>
-            <Component {...pageProps} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </Box>
         </StyledComponentsThemeProvider>
       </MaterialUiThemeProvider>

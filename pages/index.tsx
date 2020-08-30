@@ -9,7 +9,7 @@ import TreeItem from '@material-ui/lab/TreeItem'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import { makeStyles } from '@material-ui/core/styles'
-import apiMessages from '../data/api-messages.json'
+import { messages as apiMessages } from '../data/api-messages.json'
 
 const useStyles = makeStyles(theme => ({
   treeRoot: {
