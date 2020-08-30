@@ -1,77 +1,57 @@
-import keyBy from 'lodash/keyBy'
-import groupBy from 'lodash/groupBy'
-import dynamic from 'next/dynamic'
 import React from 'react'
+import fs from 'fs'
+import Link from '../components/Link'
 import Box from '@material-ui/core/Box'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableRow from '@material-ui/core/TableRow'
 import Typography from '@material-ui/core/Typography'
-import TreeView from '@material-ui/lab/TreeView'
-import TreeItem from '@material-ui/lab/TreeItem'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/core/styles'
-import { messages as apiMessages } from '../data/api-messages.json'
+import formatDate from 'date-fns/formatRFC7231'
 
-const useStyles = makeStyles(theme => ({
-  treeRoot: {
-    paddingBottom: theme.spacing(1),
-  },
-  treeChildRoot: {
-    paddingTop: theme.spacing(1),
-  },
-}))
-
-const ReactJson = dynamic(() => import('react-json-view'), { ssr: false })
-
-const messages = Object.values(
-  groupBy(apiMessages, 'requestId'),
-).map(messages => keyBy(messages, 'type'))
-
-const Page = () => {
-  const classes = useStyles()
-  return (
-    <>
-      <Box paddingBottom={2}>
-        <Typography variant='h1'>API requests</Typography>
-      </Box>
-      <TreeView
-        disableSelection
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-      >
-        {messages.map(message => (
-          <TreeItem
-            key={message.request.requestId}
-            nodeId={message.request.requestId}
-            label={`${message.request.method} ${message.request.path} ${message.response.status}`}
-            className={classes.treeRoot}
-          >
-            {message.request.body && (
-              <TreeItem
-                nodeId={'request-' + message.request.requestId}
-                label='request'
-                className={classes.treeChildRoot}
-              >
-                <Box paddingTop={1}>
-                  <ReactJson src={message.request.body} name={false} />
-                </Box>
-              </TreeItem>
-            )}
-            {message.response.body && (
-              <TreeItem
-                nodeId={'response-' + message.response.requestId}
-                label='response'
-                className={classes.treeChildRoot}
-              >
-                <Box paddingTop={1}>
-                  <ReactJson src={message.response.body} name={false} />
-                </Box>
-              </TreeItem>
-            )}
-          </TreeItem>
-        ))}
-      </TreeView>
-    </>
-  )
+export async function getStaticProps() {
+  const builds = fs.readdirSync('./data').map(buildId => {
+    const { stamp } = JSON.parse(
+      fs.readFileSync(`./data/${buildId}/timing-messages.json`, 'utf8'),
+    )
+    return { id: buildId, stamp }
+  })
+  return { props: { builds } }
 }
+
+const Page = ({ builds }) => (
+  <>
+    <Box paddingBottom={2}>
+      <Typography variant='h1'>Builds</Typography>
+    </Box>
+    <Table>
+      <TableBody>
+        {builds.map(build => (
+          <TableRow key={build.id}>
+            <TableCell component='th' scope='row'>
+              {formatDate(new Date(build.stamp))}
+            </TableCell>
+            <TableCell>
+              <Link
+                as={`/builds/${build.id}/requests`}
+                href={`/builds/[buildId]/requests?buildId=${build.id}`}
+              >
+                Requests
+              </Link>
+            </TableCell>
+            <TableCell>
+              <Link
+                as={`/builds/${build.id}/timings`}
+                href={`/builds/[buildId]/timings?buildId=${build.id}`}
+              >
+                Timings
+              </Link>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </>
+)
 
 export default Page

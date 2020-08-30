@@ -17,6 +17,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/styled-components": "^5.1.0",
+    "date-fns": "^2.16.0",
     "mui-primitives": "^0.0.12",
     "next": "^9.4.1",
     "react": "^16.13.1",
