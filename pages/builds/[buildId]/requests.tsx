@@ -15,10 +15,10 @@ import fs from 'fs'
 
 const useStyles = makeStyles(theme => ({
   treeRoot: {
-    paddingBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
   },
   treeChildRoot: {
-    paddingTop: theme.spacing(1),
+    paddingTop: theme.spacing(2),
   },
 }))
 
@@ -80,7 +80,7 @@ const Page = ({ buildId, requests }) => {
                   label='request'
                   className={classes.treeChildRoot}
                 >
-                  <Box paddingTop={1}>
+                  <Box paddingTop={2}>
                     <ReactJson src={message.request.body} name={false} />
                   </Box>
                 </TreeItem>
@@ -91,7 +91,7 @@ const Page = ({ buildId, requests }) => {
                   label='response'
                   className={classes.treeChildRoot}
                 >
-                  <Box paddingTop={1}>
+                  <Box paddingTop={2}>
                     <ReactJson src={message.response.body} name={false} />
                   </Box>
                 </TreeItem>
