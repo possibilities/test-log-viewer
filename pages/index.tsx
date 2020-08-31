@@ -7,6 +7,7 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import Typography from '@material-ui/core/Typography'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import formatDate from 'date-fns/formatRFC7231'
 
 export async function getStaticProps() {
@@ -21,8 +22,13 @@ export async function getStaticProps() {
 
 const Page = ({ builds }) => (
   <>
-    <Box paddingBottom={2}>
-      <Typography variant='h1'>Builds</Typography>
+    <Box paddingBottom={1}>
+      <Breadcrumbs aria-label='breadcrumb'>
+        <Link color='inherit' href='/' onClick={() => null}>
+          Builds
+        </Link>
+        <Typography color='textPrimary'>List</Typography>
+      </Breadcrumbs>
     </Box>
     <Table>
       <TableBody>

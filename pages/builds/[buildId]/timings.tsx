@@ -1,11 +1,13 @@
 import React from 'react'
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import Link from '../../../components/Link'
 import chunk from 'lodash/chunk'
 import keyBy from 'lodash/keyBy'
 import fs from 'fs'
@@ -38,32 +40,39 @@ export async function getStaticProps({ params: { buildId } }) {
 
 const Page = ({ buildId, timings }) => (
   <>
-    <Box paddingBottom={2}>
-      <Typography variant='h1'>Build {buildId}</Typography>
+    <Box paddingBottom={1}>
+      <Breadcrumbs aria-label='breadcrumb'>
+        <Link color='inherit' href='/' onClick={() => null}>
+          Builds
+        </Link>
+        <Typography color='textPrimary'>Timings</Typography>
+        <Link
+          color='inherit'
+          as={`/builds/${buildId}/timings`}
+          href={`/builds/[buildId]/timings?buildId=${buildId}`}
+        >
+          {buildId}
+        </Link>
+      </Breadcrumbs>
     </Box>
-    <Box paddingBottom={2}>
-      <Typography variant='h2'>Timings</Typography>
-    </Box>
-    <Box>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell size='small'>Screen URL</TableCell>
-            <TableCell>Elapsed seconds</TableCell>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell size='small'>Screen URL</TableCell>
+          <TableCell>Elapsed seconds</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {timings.map((message, index) => (
+          <TableRow key={index}>
+            <TableCell size='small' component='th' scope='row'>
+              {message.from}
+            </TableCell>
+            <TableCell>{message.elapsedMs / 1000}</TableCell>
           </TableRow>
-        </TableHead>
-        <TableBody>
-          {timings.map((message, index) => (
-            <TableRow key={index}>
-              <TableCell size='small' component='th' scope='row'>
-                {message.from}
-              </TableCell>
-              <TableCell>{message.elapsedMs / 1000}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
+        ))}
+      </TableBody>
+    </Table>
   </>
 )
 
