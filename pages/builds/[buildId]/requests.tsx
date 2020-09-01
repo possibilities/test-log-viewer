@@ -32,7 +32,13 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps({ params: { buildId } }) {
+interface StaticProps {
+  params: {
+    buildId: string
+  }
+}
+
+export async function getStaticProps({ params: { buildId } }: StaticProps) {
   const { messages } = JSON.parse(
     fs.readFileSync(`./data/${buildId}/api-messages.json`, 'utf8'),
   )
@@ -42,18 +48,36 @@ export async function getStaticProps({ params: { buildId } }) {
   return { props: { buildId, requests } }
 }
 
-const Page = ({ buildId, requests }) => {
+interface Request {
+  request: {
+    requestId: string
+    method: 'GET' | 'PUT' | 'POST'
+    path: string
+    body?: unknown
+  }
+  response: {
+    requestId: string
+    method: 'GET' | 'PUT' | 'POST'
+    path: string
+    status: number
+    body: unknown
+  }
+}
+
+interface PageProps {
+  buildId: string
+  requests: Request[]
+}
+
+const Page = ({ buildId, requests }: PageProps) => {
   const classes = useStyles()
   return (
     <>
       <Box paddingBottom={1}>
         <Breadcrumbs aria-label='breadcrumb'>
-          <Link color='inherit' href='/' onClick={() => null}>
-            Builds
-          </Link>
+          <Link href='/'>Builds</Link>
           <Typography color='textPrimary'>Requests</Typography>
           <Link
-            color='inherit'
             as={`/builds/${buildId}/requests`}
             href={`/builds/[buildId]/requests?buildId=${buildId}`}
           >
@@ -81,7 +105,10 @@ const Page = ({ buildId, requests }) => {
                   className={classes.treeChildRoot}
                 >
                   <Box paddingTop={2}>
-                    <ReactJson src={message.request.body} name={false} />
+                    <ReactJson
+                      src={message.request.body as object}
+                      name={false}
+                    />
                   </Box>
                 </TreeItem>
               )}
@@ -92,7 +119,10 @@ const Page = ({ buildId, requests }) => {
                   className={classes.treeChildRoot}
                 >
                   <Box paddingTop={2}>
-                    <ReactJson src={message.response.body} name={false} />
+                    <ReactJson
+                      src={message.response.body as object}
+                      name={false}
+                    />
                   </Box>
                 </TreeItem>
               )}

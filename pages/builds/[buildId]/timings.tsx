@@ -20,11 +20,23 @@ export async function getStaticPaths() {
   }
 }
 
-export async function getStaticProps({ params: { buildId } }) {
+interface TimingMessage {
+  url: string
+  stamp: Date
+  type: 'start' | 'stop'
+}
+
+interface StaticProps {
+  params: {
+    buildId: string
+  }
+}
+
+export async function getStaticProps({ params: { buildId } }: StaticProps) {
   const { messages } = JSON.parse(
     fs.readFileSync(`./data/${buildId}/timing-messages.json`, 'utf8'),
   )
-  const timings = chunk(messages, 2).map(messages => {
+  const timings = chunk(messages as TimingMessage[], 2).map(messages => {
     const timing = keyBy(messages, 'type')
     return {
       from: timing.start.url,
@@ -34,20 +46,26 @@ export async function getStaticProps({ params: { buildId } }) {
         new Date(timing.start.stamp).getTime(),
     }
   })
-
   return { props: { buildId, timings } }
 }
 
-const Page = ({ buildId, timings }) => (
+interface Timing {
+  from: string
+  elapsedMs: number
+}
+
+interface PageProps {
+  buildId: string
+  timings: Timing[]
+}
+
+const Page = ({ buildId, timings }: PageProps) => (
   <>
     <Box paddingBottom={1}>
       <Breadcrumbs aria-label='breadcrumb'>
-        <Link color='inherit' href='/' onClick={() => null}>
-          Builds
-        </Link>
+        <Link href='/'>Builds</Link>
         <Typography color='textPrimary'>Timings</Typography>
         <Link
-          color='inherit'
           as={`/builds/${buildId}/timings`}
           href={`/builds/[buildId]/timings?buildId=${buildId}`}
         >

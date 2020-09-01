@@ -13,20 +13,27 @@ import formatDate from 'date-fns/formatRFC7231'
 export async function getStaticProps() {
   const builds = fs.readdirSync('./data').map(buildId => {
     const { stamp } = JSON.parse(
-      fs.readFileSync(`./data/${buildId}/timing-messages.json`, 'utf8'),
+      fs.readFileSync(`./data/${buildId}/api-messages.json`, 'utf8'),
     )
     return { id: buildId, stamp }
   })
   return { props: { builds } }
 }
 
-const Page = ({ builds }) => (
+interface Build {
+  id: string
+  stamp: Date
+}
+
+interface PageProps {
+  builds: Build[]
+}
+
+const Page = ({ builds }: PageProps) => (
   <>
     <Box paddingBottom={1}>
       <Breadcrumbs aria-label='breadcrumb'>
-        <Link color='inherit' href='/' onClick={() => null}>
-          Builds
-        </Link>
+        <Link href='/'>Builds</Link>
         <Typography color='textPrimary'>List</Typography>
       </Breadcrumbs>
     </Box>
