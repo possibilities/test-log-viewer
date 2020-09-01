@@ -30,7 +30,7 @@ const App = (props: AppProps) => {
       <MaterialUiThemeProvider theme={theme}>
         <StyledComponentsThemeProvider theme={theme}>
           <CssBaseline />
-          <Box padding={2}>
+          <Box padding={3}>
             <Component {...pageProps} />
           </Box>
         </StyledComponentsThemeProvider>
