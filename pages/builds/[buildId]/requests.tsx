@@ -39,8 +39,8 @@ interface StaticProps {
 }
 
 export async function getStaticProps({ params: { buildId } }: StaticProps) {
-  const { messages } = JSON.parse(
-    fs.readFileSync(`./data/${buildId}/api-messages.json`, 'utf8'),
+  const { events: messages } = JSON.parse(
+    fs.readFileSync(`./data/${buildId}/events/api.json`, 'utf8'),
   )
   const requests = Object.values(groupBy(messages, 'requestId')).map(requests =>
     keyBy(requests, 'type'),

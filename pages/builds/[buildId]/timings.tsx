@@ -33,8 +33,8 @@ interface StaticProps {
 }
 
 export async function getStaticProps({ params: { buildId } }: StaticProps) {
-  const { messages } = JSON.parse(
-    fs.readFileSync(`./data/${buildId}/timing-messages.json`, 'utf8'),
+  const { events: messages } = JSON.parse(
+    fs.readFileSync(`./data/${buildId}/events/timing.json`, 'utf8'),
   )
   const timings = chunk(messages as TimingMessage[], 2).map(messages => {
     const timing = keyBy(messages, 'type')

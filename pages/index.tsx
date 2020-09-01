@@ -13,7 +13,7 @@ import formatDate from 'date-fns/formatRFC7231'
 export async function getStaticProps() {
   const builds = fs.readdirSync('./data').map(buildId => {
     const { stamp } = JSON.parse(
-      fs.readFileSync(`./data/${buildId}/api-messages.json`, 'utf8'),
+      fs.readFileSync(`./data/${buildId}/events/api.json`, 'utf8'),
     )
     return { id: buildId, stamp }
   })
