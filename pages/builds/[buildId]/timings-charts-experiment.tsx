@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '@material-ui/core/Box'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Table from '@material-ui/core/Table'
@@ -91,53 +93,71 @@ const removeSpace = allTimingViews => (timingView, index) => {
   }
 }
 
-const timingsToTimelineRows = timings => {
-  const rowsA = timings.map(removeSpace(timings))
-  const rows = rowsA.map(timingViewToTimelineRow)
-  return rows
-}
-
-const Page = ({ buildId, timings }: PageProps) => (
-  <>
-    <Box paddingBottom={1}>
-      <Breadcrumbs aria-label='breadcrumb'>
-        <Link href='/'>Builds</Link>
-        <Typography color='textPrimary'>Timings Charts Experiment</Typography>
-        <Link
-          as={`/builds/${buildId}/timings-charts-experiment`}
-          href={`/builds/[buildId]/timings-charts-experiment?buildId=${buildId}`}
-        >
-          {buildId}
-        </Link>
-      </Breadcrumbs>
-    </Box>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell size='small'>Screen URL</TableCell>
-          <TableCell>Elapsed seconds</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {timings.map((message, index) => (
-          <TableRow key={index}>
-            <TableCell size='small' component='th' scope='row'>
-              {message.from}
-            </TableCell>
-            <TableCell>{message.elapsedMs / 1000}</TableCell>
+const Page = ({ buildId, timings }: PageProps) => {
+  const [
+    isHidingSpaceBetweenTimings,
+    setisHidingSpaceBetweenTimings,
+  ] = useState(true)
+  return (
+    <>
+      <Box paddingBottom={1}>
+        <Breadcrumbs aria-label='breadcrumb'>
+          <Link href='/'>Builds</Link>
+          <Typography color='textPrimary'>Timings Charts Experiment</Typography>
+          <Link
+            as={`/builds/${buildId}/timings-charts-experiment`}
+            href={`/builds/[buildId]/timings-charts-experiment?buildId=${buildId}`}
+          >
+            {buildId}
+          </Link>
+        </Breadcrumbs>
+      </Box>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell size='small'>Screen URL</TableCell>
+            <TableCell>Elapsed seconds</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-    <Box paddingTop={4}>
-      <Chart
-        chartType='Timeline'
-        data={[columns, ...timingsToTimelineRows(timings)]}
-        width='100%'
-        height={(timings.length + 1) * 40 + 20 + 'px'}
-      />
-    </Box>
-  </>
-)
+        </TableHead>
+        <TableBody>
+          {timings.map((message, index) => (
+            <TableRow key={index}>
+              <TableCell size='small' component='th' scope='row'>
+                {message.from}
+              </TableCell>
+              <TableCell>{message.elapsedMs / 1000}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Box paddingTop={4}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isHidingSpaceBetweenTimings}
+              onChange={() =>
+                setisHidingSpaceBetweenTimings(isHiding => !isHiding)
+              }
+            />
+          }
+          label='Hide time between'
+        />
+      </Box>
+      <Box paddingTop={4}>
+        <Chart
+          chartType='Timeline'
+          data={[
+            columns,
+            ...(isHidingSpaceBetweenTimings
+              ? timings.map(removeSpace(timings)).map(timingViewToTimelineRow)
+              : timings.map(timingViewToTimelineRow)),
+          ]}
+          width='100%'
+          height={(timings.length + 1) * 40 + 20 + 'px'}
+        />
+      </Box>
+    </>
+  )
+}
 
 export default Page
