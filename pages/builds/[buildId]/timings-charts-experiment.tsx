@@ -119,16 +119,3 @@ const Page = ({ buildId, timings }: PageProps) => (
 )
 
 export default Page
-// import _, { keyBy } from "lodash";
-
-// class App extends React.Component {
-//   render() {
-//     return (
-//       <div className="App">
-//       </div>
-//     );
-//   }
-// }
-
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<App />, rootElement);
