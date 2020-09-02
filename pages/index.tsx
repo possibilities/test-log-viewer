@@ -60,6 +60,14 @@ const Page = ({ builds }: PageProps) => (
                 Timings
               </Link>
             </TableCell>
+            <TableCell>
+              <Link
+                as={`/builds/${build.id}/timings-charts-experiment`}
+                href={`/builds/[buildId]/timings-charts-experiment?buildId=${build.id}`}
+              >
+                Timings charts experiment
+              </Link>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
