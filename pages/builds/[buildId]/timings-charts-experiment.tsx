@@ -75,6 +75,28 @@ const timingViewToTimelineRow = timingView => [
   timingView.stopMs,
 ]
 
+const removeSpace = allTimingViews => (timingView, index) => {
+  const prevRange = allTimingViews.slice(0, index + 1)
+  console.log(timingView.from, allTimingViews.slice(0, index + 1))
+  let space = 0
+  prevRange.forEach((timingView, index) => {
+    if (index >= 1) {
+      space = space + (timingView.startMs - prevRange[index - 1].stopMs)
+    }
+  })
+  return {
+    ...timingView,
+    startMs: timingView.startMs - space,
+    stopMs: timingView.stopMs - space,
+  }
+}
+
+const timingsToTimelineRows = timings => {
+  const rowsA = timings.map(removeSpace(timings))
+  const rows = rowsA.map(timingViewToTimelineRow)
+  return rows
+}
+
 const Page = ({ buildId, timings }: PageProps) => (
   <>
     <Box paddingBottom={1}>
@@ -110,7 +132,7 @@ const Page = ({ buildId, timings }: PageProps) => (
     <Box paddingTop={4}>
       <Chart
         chartType='Timeline'
-        data={[columns, ...timings.map(timingViewToTimelineRow)]}
+        data={[columns, ...timingsToTimelineRows(timings)]}
         width='100%'
         height={(timings.length + 1) * 40 + 20 + 'px'}
       />
