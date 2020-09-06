@@ -47,13 +47,10 @@ interface PageProps {
   builds: Build[]
 }
 
-const toLineColumns = builds => [
-  { type: 'date', label: 'Date' },
-  ...builds.map(build => build.url),
-]
+const toLineColumns = builds => ['Date', ...builds.map(build => build.url)]
 
 const toLineData = builds => {
-  const lines = builds.map(build => {
+  const lines = builds.slice(2, 3).map(build => {
     const timings = build.timings.map(
       (timing, index) =>
         new Date(timing[1].stamp).getTime() -
@@ -65,7 +62,7 @@ const toLineData = builds => {
   return {
     builds,
     lineData: range(numberOfSamples).map(n => [
-      new Date(builds[0].timings[0][0].stamp),
+      new Date(builds[0].timings[0][0].stamp).getTime(),
       ...lines.map(line => line.timings[n] / 1000),
     ]),
     lines,
