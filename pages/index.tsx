@@ -8,71 +8,73 @@ import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
 import Typography from '@material-ui/core/Typography'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
+import TreeView from '@material-ui/lab/TreeView'
+import TreeItem from '@material-ui/lab/TreeItem'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import { makeStyles } from '@material-ui/core/styles'
 import formatDate from 'date-fns/formatRFC7231'
+import moment from 'moment'
+import groupBy from 'lodash/groupBy'
+import chunk from 'lodash/chunk'
+import omit from 'lodash/omit'
+import pickFp from 'lodash/fp/pick'
+import dynamic from 'next/dynamic'
+
+const ReactJson = dynamic(() => import('react-json-view'), { ssr: false })
+
+const useStyles = makeStyles(theme => ({
+  treeItem: {
+    paddingBottom: theme.spacing(1),
+  },
+}))
 
 export async function getStaticProps() {
-  const builds = fs.readdirSync('./data').map(buildId => {
-    const { stamp } = JSON.parse(
-      fs.readFileSync(`./data/${buildId}/events/api.json`, 'utf8'),
-    )
-    return { id: buildId, stamp }
-  })
-  return { props: { builds } }
+  const events = JSON.parse(fs.readFileSync('./data/events.json', 'utf8'))
+  return { props: { events } }
 }
 
-interface Build {
-  id: string
+interface Event {
+  url: string
+  type: string
   stamp: Date
+  data: unknown
 }
 
 interface PageProps {
-  builds: Build[]
+  events: { events: Event[] }
 }
 
-const Page = ({ builds }: PageProps) => (
-  <>
-    <Box paddingBottom={1}>
-      <Breadcrumbs aria-label='breadcrumb'>
-        <Link href='/'>Builds</Link>
-        <Typography color='textPrimary'>List</Typography>
-      </Breadcrumbs>
-    </Box>
-    <Table>
-      <TableBody>
-        {builds.map(build => (
-          <TableRow key={build.id}>
-            <TableCell component='th' scope='row'>
-              {formatDate(new Date(build.stamp))}
-            </TableCell>
-            <TableCell>
-              <Link
-                as={`/builds/${build.id}/requests`}
-                href={`/builds/[buildId]/requests?buildId=${build.id}`}
-              >
-                Requests
-              </Link>
-            </TableCell>
-            <TableCell>
-              <Link
-                as={`/builds/${build.id}/timings`}
-                href={`/builds/[buildId]/timings?buildId=${build.id}`}
-              >
-                Timings
-              </Link>
-            </TableCell>
-            <TableCell>
-              <Link
-                as={`/builds/${build.id}/timings-charts-experiment`}
-                href={`/builds/[buildId]/timings-charts-experiment?buildId=${build.id}`}
-              >
-                Timings charts experiment
-              </Link>
-            </TableCell>
-          </TableRow>
+const Page = ({ events }: PageProps) => {
+  const classes = useStyles()
+  return (
+    <>
+      <Box paddingBottom={1}>
+        <Breadcrumbs aria-label='breadcrumb'>
+          <Link href='/'>Events</Link>
+          <Typography color='textPrimary'>List</Typography>
+        </Breadcrumbs>
+      </Box>
+      <TreeView
+        disableSelection
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        {events.events.map((event, index) => (
+          <TreeItem
+            nodeId={`${index}`}
+            key={index}
+            label={event.type}
+            className={classes.treeItem}
+          >
+            <Box paddingTop={1}>
+              <ReactJson key={index} src={event.data} name={false} />
+            </Box>
+          </TreeItem>
         ))}
-      </TableBody>
-    </Table>
-  </>
-)
+      </TreeView>
+    </>
+  )
+}
 
 export default Page
